@@ -1,26 +1,116 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Token desain — cocok 1:1 dengan variable di file Figma "Alur".
+ * Namespace --color-* diwajibkan Tailwind v4 agar utility (bg-paper, text-ink, …) ikut ter-generate.
+ */
+@theme {
+  --color-paper: #f4f2ec;
+  --color-surface: #fcfbf7;
+  --color-ink: #201e1a;
+  --color-muted: #78736b;
+  --color-line: #e4dfd5;
+  --color-line-2: #ede9e1;
+  --color-green: #2a6a55;
+  --color-green-deep: #1f5340;
+  --color-green-soft: #d7e6dd;
+  --color-amber: #cf9a3a;
+  --color-amber-soft: #f4e7cb;
+  --color-danger: #b4552f;
+  --color-danger-soft: #e9d6ca;
+  --color-branch: #a9cbbb;
+  --color-link: #cbd9d1;
+  --color-dot: #ddd8cc;
+
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
+
+  --shadow-node: 0 1px 2px rgb(32 30 26 / 0.05), 0 4px 10px -2px rgb(32 30 26 / 0.045);
+  --shadow-sheet: 0 -6px 28px rgb(32 30 26 / 0.16);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* Kanvas peta menangani gesturnya sendiri; cegah bounce-scroll di iOS. */
+  overscroll-behavior: none;
+}
+
+/*
+ * Type ramp — satu kelas per text style di Figma, agar tidak tersebar
+ * sebagai angka ajaib di seluruh JSX dan tidak menyimpang dari desain.
+ */
+.t-wordmark { font-family: var(--font-serif); font-weight: 600; font-size: 26px; line-height: 30px; letter-spacing: -0.5px; }
+.t-alur     { font-family: var(--font-serif); font-weight: 600; font-size: 22px; line-height: 28px; letter-spacing: -0.4px; }
+.t-kartu    { font-family: var(--font-serif); font-weight: 600; font-size: 18px; line-height: 24px; letter-spacing: -0.3px; }
+.t-seksi    { font-family: var(--font-serif); font-weight: 600; font-size: 16px; line-height: 21px; letter-spacing: -0.2px; }
+.t-tahap    { font-family: var(--font-serif); font-weight: 600; font-size: 15px; line-height: 19px; letter-spacing: -0.1px; }
+.t-isi      { font-family: var(--font-serif); font-weight: 400; font-size: 13px; line-height: 17px; }
+.t-body     { font-size: 14px; line-height: 20px; }
+.t-body-sm  { font-size: 13px; line-height: 18px; }
+.t-desk     { font-size: 12px; line-height: 17px; }
+.t-label    { font-weight: 500; font-size: 13px; line-height: 16px; }
+.t-label-sm { font-weight: 500; font-size: 11px; line-height: 14px; letter-spacing: 0.2px; }
+.t-meta     { font-size: 12px; line-height: 16px; letter-spacing: 0.1px; }
+.t-petunjuk { font-size: 11px; line-height: 15px; letter-spacing: 0.2px; }
+.t-overline { font-weight: 600; font-size: 10px; line-height: 12px; letter-spacing: 0.8px; text-transform: uppercase; }
+
+/* PRD §10 — fokus keyboard harus terlihat. */
+:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Hormati notch / home indicator saat dipasang sebagai PWA; di browser jatuh ke nilai dasar. */
+.safe-top {
+  padding-top: max(1.25rem, env(safe-area-inset-top));
+}
+.safe-bottom {
+  padding-bottom: max(1.75rem, env(safe-area-inset-bottom));
+}
+
+/* PRD §8 — latar kanvas bertekstur titik, kesan "papan". */
+.dot-canvas {
+  background-image: radial-gradient(var(--color-dot) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: 11px 11px;
+}
+
+/* PRD §7.4 — kanvas tidak boleh menggulung halaman saat digestur. */
+.map-viewport {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheet-in {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+/* PRD §10 — hormati prefers-reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

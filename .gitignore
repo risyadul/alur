@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# oh-my-claudecode: state runtime per-sesi, bukan artefak proyek
+.omc/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
