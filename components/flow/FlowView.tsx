@@ -42,6 +42,7 @@ type Props = {
   onRemoveStage: (stageId: string) => void;
   onMoveStage: (stageId: string, direction: -1 | 1) => void;
   onAddItem: (stageId: string, text: string) => void;
+  onToggleItemDone: (stageId: string, itemId: string) => void;
   onEditItem: (stageId: string, item: Item) => void;
 };
 
@@ -57,6 +58,7 @@ export function FlowView({
   onRemoveStage,
   onMoveStage,
   onAddItem,
+  onToggleItemDone,
   onEditItem,
 }: Props) {
   const actions = (
@@ -146,6 +148,7 @@ export function FlowView({
           onRemoveStage={onRemoveStage}
           onMoveStage={onMoveStage}
           onAddItem={onAddItem}
+          onToggleItemDone={onToggleItemDone}
           onEditItem={onEditItem}
         />
       )}

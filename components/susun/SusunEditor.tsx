@@ -10,6 +10,7 @@ type Props = {
   onRemoveStage: (stageId: string) => void;
   onMoveStage: (stageId: string, direction: -1 | 1) => void;
   onAddItem: (stageId: string, text: string) => void;
+  onToggleItemDone: (stageId: string, itemId: string) => void;
   onEditItem: (stageId: string, item: Item) => void;
 };
 
@@ -21,6 +22,7 @@ export function SusunEditor({
   onRemoveStage,
   onMoveStage,
   onAddItem,
+  onToggleItemDone,
   onEditItem,
 }: Props) {
   const [draftStage, setDraftStage] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export function SusunEditor({
             onRemove={() => onRemoveStage(stage.id)}
             onMove={(direction) => onMoveStage(stage.id, direction)}
             onAddItem={(text) => onAddItem(stage.id, text)}
+            onToggleDone={(itemId) => onToggleItemDone(stage.id, itemId)}
             onEditItem={(item) => onEditItem(stage.id, item)}
           />
         ))}

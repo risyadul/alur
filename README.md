@@ -75,6 +75,10 @@ untuk aksi diskret (tombol zoom & fit) — PRD §7.4.
 - **`danger-soft`** ditambahkan ke palet PRD §8 (yang hanya punya `green-soft`/`amber-soft`)
   untuk lencana konfirmasi hapus.
 - **Hapus isi** ada di dalam modal "Ubah isi", bukan tombol terpisah per baris.
+- **Penanda selesai (`item.done`).** Dicentang di tab Susun; peta bersifat baca-saja
+  (§6.4) dan hanya menampilkan. Centang di node peta memakai warna stroke eksplisit —
+  sama seperti garis penghubung — agar ikut terbawa ke ekspor PNG. Progres tampil di node
+  tahap ("M/N selesai") dan sebagai bilah di kartu dashboard.
 - **Ekspor selalu utuh.** PNG digambar dari pohon tersembunyi (`isExporting` di
   `PetaCanvas`), bukan dari kanvas hidup: kanvas hidup punya transform kamera, dan tahap
   yang sedang dilipat akan jadi lubang kosong. Keadaan terlipat & posisi kamera bersifat

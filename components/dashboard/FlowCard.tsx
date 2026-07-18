@@ -16,6 +16,13 @@ export function FlowCard({ flow, onOpen }: Props) {
   const shown = flow.stages.slice(0, RIBBON_LIMIT);
   const hiddenCount = flow.stages.length - shown.length;
 
+  const totalItems = flow.stages.reduce((n, s) => n + s.items.length, 0);
+  const doneItems = flow.stages.reduce(
+    (n, s) => n + s.items.filter((i) => i.done).length,
+    0,
+  );
+  const percent = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
+
   return (
     <button
       type="button"
@@ -38,6 +45,23 @@ export function FlowCard({ flow, onOpen }: Props) {
             </Fragment>
           ))}
           {hiddenCount > 0 && <span className="t-label-sm text-muted">+{hiddenCount}</span>}
+        </div>
+      )}
+
+      {totalItems > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <span className="t-meta text-muted">Progres</span>
+            <span className="t-meta text-muted">
+              {doneItems}/{totalItems} selesai
+            </span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-line-2">
+            <div
+              className="h-full rounded-full bg-green transition-[width] duration-300"
+              style={{ width: `${percent}%` }}
+            />
+          </div>
         </div>
       )}
 

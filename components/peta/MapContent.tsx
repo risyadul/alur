@@ -34,6 +34,7 @@ export function MapContent({ stages, layout, collapsedIds, onToggleStage }: Prop
               <StageNode
                 name={stage.name}
                 itemCount={stage.items.length}
+                doneCount={stage.items.filter((it) => it.done).length}
                 role={stageRole(i, stages.length)}
                 isCollapsed={isCollapsed}
                 onToggle={() => onToggleStage?.(stage.id)}
@@ -61,7 +62,11 @@ export function MapContent({ stages, layout, collapsedIds, onToggleStage }: Prop
                 return (
                   <Fragment key={item.id}>
                     <div className="absolute" style={{ left: sl.itemX, top: row.itemY }}>
-                      <ItemNode text={item.text} measureKey={itemKey(item.id)} />
+                      <ItemNode
+                        text={item.text}
+                        isDone={item.done}
+                        measureKey={itemKey(item.id)}
+                      />
                     </div>
                     {row.hasDesc && (
                       <div className="absolute" style={{ left: sl.descX, top: row.descY }}>

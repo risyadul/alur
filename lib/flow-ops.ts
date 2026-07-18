@@ -122,10 +122,22 @@ export function addItem(
 ): AlurData {
   const trimmed = text.trim();
   if (!trimmed) return data;
-  const item: Item = { id: createId(), text: trimmed, desc: "" };
+  const item: Item = { id: createId(), text: trimmed, desc: "", done: false };
   return mapStage(data, flowId, stageId, (stage) => ({
     ...stage,
     items: [...stage.items, item],
+  }));
+}
+
+export function toggleItemDone(
+  data: AlurData,
+  flowId: string,
+  stageId: string,
+  itemId: string,
+): AlurData {
+  return mapStage(data, flowId, stageId, (stage) => ({
+    ...stage,
+    items: stage.items.map((i) => (i.id === itemId ? { ...i, done: !i.done } : i)),
   }));
 }
 

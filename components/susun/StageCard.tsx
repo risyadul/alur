@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Item, Stage } from "@/lib/types";
 import { stageRole } from "@/lib/map-layout";
 import { IconButton } from "@/components/ui/IconButton";
-import { ChevronDown, ChevronUp, Pencil, Plus, Trash } from "@/components/ui/icons";
+import { Check, ChevronDown, ChevronUp, Pencil, Plus, Trash } from "@/components/ui/icons";
 import { STAGE_ACCENT, STAGE_TINT } from "@/components/ui/stage-tone";
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
   onRemove: () => void;
   onMove: (direction: -1 | 1) => void;
   onAddItem: (text: string) => void;
+  onToggleDone: (itemId: string) => void;
   onEditItem: (item: Item) => void;
 };
 
@@ -27,6 +28,7 @@ export function StageCard({
   onRemove,
   onMove,
   onAddItem,
+  onToggleDone,
   onEditItem,
 }: Props) {
   const role = stageRole(index, total);
@@ -144,12 +146,27 @@ export function StageCard({
           <ul className="flex flex-col gap-2.5">
             {stage.items.map((item) => (
               <li key={item.id} className="flex items-start gap-2.5">
-                <span
-                  className="mt-[7px] size-[5px] shrink-0 rounded-full bg-branch"
-                  aria-hidden="true"
-                />
+                <button
+                  type="button"
+                  onClick={() => onToggleDone(item.id)}
+                  aria-pressed={item.done}
+                  aria-label={
+                    item.done
+                      ? `Batalkan tanda selesai: ${item.text}`
+                      : `Tandai selesai: ${item.text}`
+                  }
+                  className={`mt-0.5 grid size-[22px] shrink-0 place-items-center rounded-md border transition-colors ${
+                    item.done
+                      ? "border-green bg-green text-surface"
+                      : "border-line bg-surface text-transparent hover:border-green"
+                  }`}
+                >
+                  <Check width={14} height={14} />
+                </button>
                 <div className="min-w-0 flex-1">
-                  <p className="t-body text-ink">{item.text}</p>
+                  <p className={`t-body ${item.done ? "text-muted line-through" : "text-ink"}`}>
+                    {item.text}
+                  </p>
                   {/* Deskripsi tampil abu-abu di bawah judul isi — PRD §6.3. */}
                   {item.desc && <p className="t-body-sm text-muted">{item.desc}</p>}
                 </div>

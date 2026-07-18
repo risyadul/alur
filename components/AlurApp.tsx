@@ -13,6 +13,7 @@ import {
   removeItem,
   removeStage,
   renameStage,
+  toggleItemDone,
   updateFlow,
   updateItem,
 } from "@/lib/flow-ops";
@@ -121,6 +122,9 @@ export function AlurApp() {
             update((d) => moveStage(d, current.id, stageId, direction))
           }
           onAddItem={(stageId, text) => update((d) => addItem(d, current.id, stageId, text))}
+          onToggleItemDone={(stageId, itemId) =>
+            update((d) => toggleItemDone(d, current.id, stageId, itemId))
+          }
           onEditItem={(stageId, item) => {
             setItemDraft({ text: item.text, desc: item.desc });
             setDialog({ kind: "ubah-isi", stageId, item });

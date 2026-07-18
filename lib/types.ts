@@ -6,6 +6,8 @@ export interface Item {
   text: string;
   /** Deskripsi detail (opsional). Kosong = tidak ada node deskripsi di peta. */
   desc: string;
+  /** Penanda selesai — dicentang di tab Susun, ditampilkan (baca-saja) di peta. */
+  done: boolean;
 }
 
 export interface Stage {

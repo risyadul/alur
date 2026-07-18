@@ -34,6 +34,8 @@ function normalizeItem(raw: unknown): Item | null {
     id: asString(raw.id) || createId(),
     text,
     desc: asString(raw.desc),
+    // Data lama tak punya field ini; anggap belum selesai.
+    done: raw.done === true,
   };
 }
 
