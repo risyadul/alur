@@ -98,7 +98,8 @@ export function DescNode({ text, measureKey }: DescNodeProps) {
       data-measure-key={measureKey}
       className="flex min-h-[40px] w-[210px] items-center rounded-[10px] border border-line-2 bg-surface px-3 py-[9px] shadow-node"
     >
-      <span className="t-desk text-muted">{text}</span>
+      {/* pre-line: pertahankan newline yang diketik pengguna; tetap membungkus di lebar tetap. */}
+      <span className="t-desk whitespace-pre-line text-muted">{text}</span>
     </div>
   );
 }

@@ -167,8 +167,11 @@ export function StageCard({
                   <p className={`t-body ${item.done ? "text-muted line-through" : "text-ink"}`}>
                     {item.text}
                   </p>
-                  {/* Deskripsi tampil abu-abu di bawah judul isi — PRD §6.3. */}
-                  {item.desc && <p className="t-body-sm text-muted">{item.desc}</p>}
+                  {/* Deskripsi tampil abu-abu di bawah judul isi — PRD §6.3.
+                      pre-line mempertahankan newline yang diketik di modal. */}
+                  {item.desc && (
+                    <p className="t-body-sm whitespace-pre-line text-muted">{item.desc}</p>
+                  )}
                 </div>
                 <IconButton label={`Ubah isi: ${item.text}`} onClick={() => onEditItem(item)}>
                   <Pencil />
