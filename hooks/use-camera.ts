@@ -15,6 +15,18 @@ export interface Size {
   height: number;
 }
 
+/**
+ * GestureEvent hanya ada di WebKit (Safari desktop & iOS) — tidak ada di lib DOM
+ * TypeScript. `scale` bersifat kumulatif sejak gesturestart (=1): >1 = jari
+ * merenggang = perbesar. Tandanya sudah benar, jadi tidak rentan terbalik seperti
+ * selisih koordinat pointer di iOS.
+ */
+interface GestureLikeEvent extends Event {
+  readonly scale: number;
+  readonly clientX: number;
+  readonly clientY: number;
+}
+
 /** Ambang gerak yang memisahkan ketuk (buka-tutup tahap) dari seret (pan) — PRD §7.5. */
 const DRAG_THRESHOLD = 4;
 const ZOOM_STEP = 1.35;
@@ -182,6 +194,10 @@ export function useCamera(
     const vp = viewportRef.current;
     if (!vp) return;
 
+    // Safari/WebKit (termasuk iOS) mengekspos GestureEvent; di sana pinch ditangani
+    // gestur native (scale bertanda benar). Chrome/Firefox = false → pakai jalur pointer.
+    const SUPPORTS_GESTURE = "GestureEvent" in window;
+
     const pointers = new Map<number, { x: number; y: number }>();
     let isPanning = false;
     let last = { x: 0, y: 0 };
@@ -223,6 +239,9 @@ export function useCamera(
 
       // Cubit dua jari — zoom di titik tengah cubitan.
       if (pointers.size >= 2) {
+        // Di Safari/iOS zoom ditangani GestureEvent (di bawah). Jalur pointer ini
+        // memakai selisih koordinat yang di iOS bisa terbalik — lewati agar tak dobel.
+        if (SUPPORTS_GESTURE) return;
         const [a, b] = [...pointers.values()];
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
         if (pinchDist > 0 && dist > 0) {
@@ -273,11 +292,38 @@ export function useCamera(
       setCam((c) => zoomAt(c, Math.exp(-delta * 0.0015), e.clientX - r.left, e.clientY - r.top));
     };
 
+    // Pinch native Safari/iOS. preventDefault menahan zoom-halaman bawaan Safari;
+    // scale kumulatif (mulai 1) dibuat inkremental lewat rasio ke nilai sebelumnya.
+    let gestureScale = 1;
+    const handleGestureStart = (e: GestureLikeEvent) => {
+      e.preventDefault();
+      stopAnim();
+      gestureScale = e.scale || 1;
+      hasPannedRef.current = true; // gestur ≠ ketuk — jangan picu buka-tutup tahap
+    };
+    const handleGestureChange = (e: GestureLikeEvent) => {
+      e.preventDefault();
+      if (gestureScale <= 0) return;
+      const r = vp.getBoundingClientRect();
+      const factor = e.scale / gestureScale;
+      gestureScale = e.scale;
+      setCam((c) => zoomAt(c, factor, e.clientX - r.left, e.clientY - r.top));
+    };
+    const handleGestureEnd = (e: GestureLikeEvent) => {
+      e.preventDefault();
+      gestureScale = 1;
+    };
+
     vp.addEventListener("pointerdown", handleDown);
     vp.addEventListener("pointermove", handleMove);
     vp.addEventListener("pointerup", handleUp);
     vp.addEventListener("pointercancel", handleUp);
     vp.addEventListener("wheel", handleWheel, { passive: false });
+    if (SUPPORTS_GESTURE) {
+      vp.addEventListener("gesturestart", handleGestureStart as EventListener);
+      vp.addEventListener("gesturechange", handleGestureChange as EventListener);
+      vp.addEventListener("gestureend", handleGestureEnd as EventListener);
+    }
 
     return () => {
       vp.removeEventListener("pointerdown", handleDown);
@@ -285,6 +331,11 @@ export function useCamera(
       vp.removeEventListener("pointerup", handleUp);
       vp.removeEventListener("pointercancel", handleUp);
       vp.removeEventListener("wheel", handleWheel);
+      if (SUPPORTS_GESTURE) {
+        vp.removeEventListener("gesturestart", handleGestureStart as EventListener);
+        vp.removeEventListener("gesturechange", handleGestureChange as EventListener);
+        vp.removeEventListener("gestureend", handleGestureEnd as EventListener);
+      }
     };
   }, [stopAnim, viewportRef]);
 

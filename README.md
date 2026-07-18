@@ -58,10 +58,14 @@ keduanya pada baseline yang sama — itulah sebabnya garis tautan selalu horizon
 tidak pernah bertumpuk. Pengukuran diulang setelah `document.fonts.ready` karena tinggi
 bergantung pada metrik font.
 
-**`hooks/use-camera.ts`** — pan/zoom via Pointer Events. Dua hal yang mudah dirusak:
+**`hooks/use-camera.ts`** — pan/zoom via Pointer Events. Tiga hal yang mudah dirusak:
 pointer **tidak** ditangkap saat `pointerdown` (menangkapnya mengalihkan `click` ke viewport
-dan mematikan ketuk-untuk-melipat); dan pan/pinch/wheel sengaja tanpa easing, animasi hanya
-untuk aksi diskret (tombol zoom & fit) — PRD §7.4.
+dan mematikan ketuk-untuk-melipat); pan/pinch/wheel sengaja tanpa easing, animasi hanya
+untuk aksi diskret (tombol zoom & fit) — PRD §7.4; dan **pinch di Safari/iOS memakai
+`GestureEvent` native, bukan selisih koordinat pointer dua-jari**. Di WebKit, koordinat
+sentuh selama gestur berada di frame yang membuat jalur pointer terbalik arahnya; `GestureEvent.scale`
+bertanda benar (>1 = jari merenggang = perbesar). Jangan hapus jalur `GestureEvent` — jalur
+pointer dipertahankan hanya untuk Chrome/Android/Firefox yang tak mengekspos `GestureEvent`.
 
 ## Catatan implementasi
 
